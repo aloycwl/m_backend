@@ -12,7 +12,7 @@ contract Main{
             clubs[i]=clubs[clubs.length-1];
             clubs.pop();
             return;
-        }
+        } 
         clubs.push(a);
     }}
     function getClubs()external view returns(address[]memory){
