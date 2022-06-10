@@ -1,32 +1,39 @@
 pragma solidity>0.8.0;//SPDX-License-Identifier:None
 interface IERC721{
-    function owner()external view returns(address);
     function balanceOf(address)external view returns(uint);
 }
 contract Main{
-    address[]public clubs;
+    struct Clubs{
+        address contractAddr;
+        address ownerAddr;
+    }
+    Clubs[]private clubs;
     function addremoveClubs(address a)external{unchecked{
-        require(IERC721(a).owner()==msg.sender);
+        bool isNew=true;
         for(uint i=0;i<clubs.length;i++)
-        if(clubs[i]==a){
-            clubs[i]=clubs[clubs.length-1];
-            clubs.pop();
-            return;
-        } 
-        clubs.push(a);
+        if(clubs[i].contractAddr==a){
+            if(clubs[i].ownerAddr==msg.sender){
+                clubs[i]=clubs[clubs.length-1];
+                clubs.pop();
+                return;
+            }
+            isNew=false;
+        }
+        if(isNew)clubs.push(Clubs(a,msg.sender));
     }}
-    function getClubs()external view returns(address[]memory){
-        return clubs;
+    function getClubs()external view returns(address[]memory c){
+        c=new address[](clubs.length);
+        for(uint i=0;i<clubs.length;i++)c[i]=clubs[i].contractAddr;
     }
     function getOwned()external view returns(address[]memory a,uint[]memory b){unchecked{
         uint count;
         for(uint i=0;i<clubs.length;i++)
-        if(IERC721(clubs[i]).balanceOf(msg.sender)>0)count++;
+        if(IERC721(clubs[i].contractAddr).balanceOf(msg.sender)>0)count++;
         (a,b)=(new address[](count),new uint[](count));
         count=0;
         for(uint i=0;i<clubs.length;i++){
-            uint bal=IERC721(clubs[i]).balanceOf(msg.sender);
-            if(bal>0)(a[count]=clubs[i],b[count]=bal,count++);
+            uint bal=IERC721(clubs[i].contractAddr).balanceOf(msg.sender);
+            if(bal>0)(a[count]=clubs[i].contractAddr,b[count]=bal,count++);
         }
     }}
 }
