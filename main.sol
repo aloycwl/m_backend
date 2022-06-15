@@ -25,14 +25,14 @@ contract Main{
         c=new address[](clubs.length);
         for(uint i=0;i<clubs.length;i++)c[i]=clubs[i].contractAddr;
     }
-    function getOwned()external view returns(address[]memory a,uint[]memory b){unchecked{
+    function getOwned(address c)external view returns(address[]memory a,uint[]memory b){unchecked{
         uint count;
         for(uint i=0;i<clubs.length;i++)
-        if(IERC721(clubs[i].contractAddr).balanceOf(msg.sender)>0)count++;
+        if(IERC721(clubs[i].contractAddr).balanceOf(c)>0)count++;
         (a,b)=(new address[](count),new uint[](count));
         count=0;
         for(uint i=0;i<clubs.length;i++){
-            uint bal=IERC721(clubs[i].contractAddr).balanceOf(msg.sender);
+            uint bal=IERC721(clubs[i].contractAddr).balanceOf(c);
             if(bal>0)(a[count]=clubs[i].contractAddr,b[count]=bal,count++);
         }
     }}
